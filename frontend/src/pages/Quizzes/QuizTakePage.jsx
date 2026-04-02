@@ -21,7 +21,13 @@ const QuizTakePage = () => {
     const fetchQuiz = async () => {
       try {
         const response = await quizService.getQuizById(quizId);
-        setQuiz(response.data);
+        const fetchedQuiz = response.data;
+        // If quiz already completed, skip straight to results
+        if (fetchedQuiz.completedAt) {
+          navigate(`/quizzes/${quizId}/results`, { replace: true });
+          return;
+        }
+        setQuiz(fetchedQuiz);
       } catch (error) {
         toast.error('Failed to fetch quiz.');
         console.error(error);
@@ -31,7 +37,7 @@ const QuizTakePage = () => {
     };
 
     fetchQuiz();
-  }, [quizId]);
+  }, [quizId, navigate]);
 
   const handleOptionChange = (questionId, optionIndex) => {
     setSelectedAnswers((prev) => ({
@@ -52,8 +58,30 @@ const QuizTakePage = () => {
     }
   };
 
-  const handleSubmitQuiz = async () => { //5:45:34
-    // You can implement submit logic here 
+  const handleSubmitQuiz = async () => {
+    setSubmitting(true);
+    try {
+      const formattedAnswers = Object.keys(selectedAnswers).map(questionId => {
+        const question = quiz.questions.find(q => q._id === questionId);
+        const questionIndex = quiz.questions.findIndex(q => q._id === questionId);
+        const optionIndex = selectedAnswers[questionId];
+        const selectedAnswer = question.options[optionIndex];
+        return { questionIndex, selectedAnswer };
+      });
+
+      await quizService.submitQuiz(quizId, formattedAnswers);
+      toast.success('Quiz submitted successfully!');
+      navigate(`/quizzes/${quizId}/results`);
+    } catch (error) {
+      if (error.error === 'Quiz already completed' || error.message === 'Quiz already completed') {
+        toast('Quiz already submitted — showing your results.');
+        navigate(`/quizzes/${quizId}/results`, { replace: true });
+      } else {
+        toast.error(error.message || error.error || 'Failed to submit quiz.');
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -121,8 +149,8 @@ const QuizTakePage = () => {
               <label
                 key={index}
                 className={`group relative flex items-center p-3 border-2 rounded-xl cursor-pointer transition-all duration-200 ${isSelected
-                    ? "border-emerald-500 bg-emerald-50 shadow-lg shadow-emerald-500/10"
-                    : "border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-white hover:shadow-md"
+                  ? "border-emerald-500 bg-emerald-50 shadow-lg shadow-emerald-500/10"
+                  : "border-slate-200 bg-slate-50/50 hover:border-slate-300 hover:bg-white hover:shadow-md"
                   }`}
               >
                 <input
@@ -136,8 +164,8 @@ const QuizTakePage = () => {
 
                 {/* Custom Radio Button */}
                 <div className={`shrink-0 w-5 h-5 rounded-full border-2 transition-all duration-200 ${isSelected
-                    ? "border-emerald-500 bg-emerald-500"
-                    : "border-slate-300 bg-white group-hover:border-emerald-400"
+                  ? "border-emerald-500 bg-emerald-500"
+                  : "border-slate-300 bg-white group-hover:border-emerald-400"
                   }`}>
                   {isSelected && (
                     <div className="w-full h-full flex items-center justify-center">
@@ -222,10 +250,9 @@ const QuizTakePage = () => {
               key={index}
               onClick={() => setCurrentQuestionIndex(index)}
               disabled={submitting}
-              className={`w-8 h-8 rounded-lg font-semibold text-xs transition-all duration-200 ${
-                isCurrent
-                    ? "bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 scale-110"
-                    : isAnsweredQuestion
+              className={`w-8 h-8 rounded-lg font-semibold text-xs transition-all duration-200 ${isCurrent
+                  ? "bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25 scale-110"
+                  : isAnsweredQuestion
                     ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}

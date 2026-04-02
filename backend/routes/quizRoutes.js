@@ -13,8 +13,8 @@ const router = express.Router();
 //all routes are protected
 router.use(protect);
 
-router.get('/:documentId', getQuizzes);
 router.route('/quiz/:id').get(getQuizById).delete(deleteQuiz);
+router.get('/:documentId', getQuizzes);
 router.post('/:id/submit', submitQuiz);
 router.get('/:id/results', getQuizResults);
 router.delete('/:id', deleteQuiz);

@@ -10,8 +10,8 @@ import DocumentListPage from './pages/Documents/DocumentListPage';
 import DocumentDetailPage from './pages/Documents/DocumentDetailPage';
 import FlashcardListPage from './pages/Flashcards/FlashcardsListPage';
 import FlashcardPage from './pages/Flashcards/FlashcardPage';
-import QuizTakePage from './pages/quizzes/QuizTakePage';
-import QuizResultPage from './pages/quizzes/QuizResultPage';
+import QuizTakePage from './pages/Quizzes/QuizTakePage';
+import QuizResultPage from './pages/Quizzes/QuizResultPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import Spinner from './components/common/Spinner';
 
@@ -42,8 +42,8 @@ const App = () => {
          <Route path="/documents/:id" element={<DocumentDetailPage />} />
          <Route path="/flashcards" element={<FlashcardListPage />} />
          <Route path="/documents/:id/flashcards" element={<FlashcardPage />} />
-         <Route path="/quizzes/:quizid/" element={<QuizTakePage />} />
-         <Route path="/quizzes/:quizid/results" element={<QuizResultPage />} />
+         <Route path="/quizzes/:quizId" element={<QuizTakePage />} />
+         <Route path="/quizzes/:quizId/results" element={<QuizResultPage />} />
          <Route path="/profile" element={<ProfilePage />} />
         </Route>
         
