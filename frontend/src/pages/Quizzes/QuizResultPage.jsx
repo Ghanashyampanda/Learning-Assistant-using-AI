@@ -12,6 +12,7 @@ import quizService from '../../services/quizService';
 import PageHeader from '../../components/common/PageHeader';
 import Spinner from '../../components/common/Spinner';
 import toast from 'react-hot-toast';
+import QuizResultQuestionCard from '../../components/quizzes/QuizResultQuestionCard';
 
 const QuizResultPage = () => {
   const { quizId } = useParams();
@@ -141,72 +142,15 @@ const QuizResultPage = () => {
 
       <div className="space-y-4 mb-8">
         {results.map((result, index) => (
-          <div
+          <QuizResultQuestionCard
             key={index}
-            className={`bg-white/80 backdrop-blur-xl border-2 rounded-2xl p-5 shadow-sm transition-all duration-200 ${
-              result.isCorrect ? 'border-emerald-200' : 'border-rose-200'
-            }`}
-          >
-            {/* Question Header */}
-            <div className="flex items-start gap-3 mb-4">
-              {result.isCorrect ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" strokeWidth={2.5} />
-              ) : (
-                <XCircle className="w-5 h-5 text-rose-500 mt-0.5 shrink-0" strokeWidth={2.5} />
-              )}
-              <p className="text-sm font-semibold text-slate-900 leading-relaxed">
-                <span className="text-slate-400 font-medium mr-1">Q{index + 1}.</span>
-                {result.question}
-              </p>
-            </div>
-
-            {/* Options */}
-            <div className="space-y-2 ml-8">
-              {result.options.map((option, optIdx) => {
-                const isCorrectAnswer = option === result.correctAnswer;
-                const isUserAnswer = option === result.selectedAnswer;
-                const isWrongUserAnswer = isUserAnswer && !isCorrectAnswer;
-
-                return (
-                  <div
-                    key={optIdx}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-150 ${
-                      isCorrectAnswer
-                        ? 'bg-emerald-50 border border-emerald-300 text-emerald-800'
-                        : isWrongUserAnswer
-                        ? 'bg-rose-50 border border-rose-300 text-rose-800'
-                        : 'bg-slate-50 border border-slate-200 text-slate-600'
-                    }`}
-                  >
-                    {isCorrectAnswer && (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" strokeWidth={2.5} />
-                    )}
-                    {isWrongUserAnswer && (
-                      <XCircle className="w-4 h-4 text-rose-500 shrink-0" strokeWidth={2.5} />
-                    )}
-                    {!isCorrectAnswer && !isWrongUserAnswer && (
-                      <div className="w-4 h-4 shrink-0" />
-                    )}
-                    <span>{option}</span>
-                    {isUserAnswer && !isCorrectAnswer && (
-                      <span className="ml-auto text-xs text-rose-500 font-semibold">Your answer</span>
-                    )}
-                    {isCorrectAnswer && (
-                      <span className="ml-auto text-xs text-emerald-600 font-semibold">Correct</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Explanation */}
-            {result.explanation && (
-              <div className="ml-8 mt-3 px-3 py-2 bg-blue-50 border border-blue-200 rounded-xl">
-                <p className="text-xs font-semibold text-blue-700 mb-0.5">Explanation</p>
-                <p className="text-sm text-blue-800 leading-relaxed">{result.explanation}</p>
-              </div>
-            )}
-          </div>
+            questionNumber={index + 1}
+            question={result.question}
+            options={result.options}
+            correctAnswer={result.correctAnswer}
+            selectedAnswer={result.selectedAnswer}
+            explanation={result.explanation}
+          />
         ))}
       </div>
 
