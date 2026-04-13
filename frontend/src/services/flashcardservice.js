@@ -47,6 +47,17 @@ const toggleStar = async (cardId) => {
     throw error.response?.data || { message: "Failed to star flashcard" };
   }
 };
+
+const toggleLearned = async (cardId) => {
+  try {
+    const response = await axioInstance.post(
+      API_PATHS.FLASHCARDS.TOGGLE_LEARNED(cardId),
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to mark flashcard as learned" };
+  }
+};
 const deleteFlashcardSet = async (Id) => {
   try {
     const response = await axioInstance.delete(
@@ -63,6 +74,7 @@ const flashcardService = {
   getFlashcardsForDocument,
   reviewFlashcard,
   toggleStar,
+  toggleLearned,
   deleteFlashcardSet,
 };
 export default flashcardService;

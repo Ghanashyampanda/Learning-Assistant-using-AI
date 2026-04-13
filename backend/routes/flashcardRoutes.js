@@ -4,6 +4,7 @@ import {
     getAllFlashcardSets,
     reviewFlashcard,
     toggleStarFlashcard,
+    toggleLearnedFlashcard,
     deleteFlashcardSet,
 } from '../controllers/flashcardController.js';
 import protect from '../middleware/auth.js';
@@ -16,6 +17,7 @@ router.get('/', getAllFlashcardSets);
 router.get('/:documentId', getFlashcards);
 router.post('/:cardId/review', reviewFlashcard);
 router.post('/:cardId/star', toggleStarFlashcard);
+router.post('/:cardId/learned', toggleLearnedFlashcard);
 router.delete('/:id', deleteFlashcardSet);
 
 export default router;

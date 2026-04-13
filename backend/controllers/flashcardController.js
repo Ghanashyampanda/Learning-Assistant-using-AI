@@ -125,6 +125,48 @@ export const toggleStarFlashcard = async (req, res, next) => {
     }
 };
 
+//@desc Toggle learned status on flashcard
+//@route POST /api/flashcards/:cardId/learned
+//@access Private
+export const toggleLearnedFlashcard = async (req, res, next) => {
+    try {
+        const flashcardSet = await Flashcard.findOne({
+            'cards._id': req.params.cardId,
+            userId: req.user._id
+        });
+        if(!flashcardSet) {
+            return res.status(404).json({
+                success: false,
+                error: "Flashcard set or card not found",
+                statusCode: 404
+            });
+        }
+
+        const cardIndex = flashcardSet.cards.findIndex(card => card._id.toString() === req.params.cardId);
+
+        if(cardIndex == -1){
+            return res.status(404).json({
+                success: false,
+                error: "Card not found in set",
+                statusCode: 404
+            });
+        }
+
+        //Toggle learned
+        flashcardSet.cards[cardIndex].isLearned = !flashcardSet.cards[cardIndex].isLearned;
+        
+        await flashcardSet.save();
+
+        res.status(200).json({
+            success: true,
+            data: flashcardSet,
+            message: `Flashcard ${flashcardSet.cards[cardIndex].isLearned ? 'marked as learned' : 'unmarked as learned'}`
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 //@desc Delete flashcard set
 //@route DELETE /api/flashcards/:id
 //@access Private

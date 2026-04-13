@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useReactToPrint } from "react-to-print";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import {
   ArrowLeft,
   Plus,
   ChevronLeft,
   ChevronRight,
   Trash2,
+  Shuffle,
+  Printer,
+  Download,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -28,6 +34,8 @@ const FlashcardPage = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  
+  const printRef = useRef(null);
 
   const fetchFlashcards = async () => {
     setLoading(true);
@@ -100,6 +108,104 @@ const FlashcardPage = () => {
     }
   };
 
+  const handleToggleLearned = async (cardId) => {
+    try {
+      await flashcardService.toggleLearned(cardId);
+      setFlashcards((prevFlashcards) =>
+        prevFlashcards.map((card) =>
+          card._id === cardId ? { ...card, isLearned: !card.isLearned } : card
+        )
+      );
+      toast.success("Flashcard learned status updated!");
+    } catch (error) {
+      toast.error("Failed to update learned status.");
+    }
+  };
+
+  const handleShuffle = () => {
+    setFlashcards((prevFlashcards) => {
+      const shuffled = [...prevFlashcards];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    });
+    setCurrentCardIndex(0);
+    toast.success("Flashcards shuffled!");
+  };
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: "Flashcards",
+  });
+
+  // Fallback for v2 of react-to-print if contentRef doesn't work
+  const handlePrintLegacy = useReactToPrint({
+    content: () => printRef.current,
+    documentTitle: "Flashcards",
+  });
+
+  const triggerPrint = () => {
+    try {
+      handlePrint();
+    } catch {
+      handlePrintLegacy();
+    }
+  };
+
+  const handleDownloadPDF = async () => {
+    const element = printRef.current;
+    if (!element) return;
+
+    try {
+      toast.loading("Generating PDF...", { id: "pdfLoading" });
+      
+      const originalGetContext = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function(type, options) {
+        if (type === '2d') {
+          options = options || {};
+          options.willReadFrequently = true;
+        }
+        return originalGetContext.call(this, type, options);
+      };
+
+      let canvas;
+      try {
+        canvas = await html2canvas(element, { scale: 2, useCORS: true });
+      } finally {
+        HTMLCanvasElement.prototype.getContext = originalGetContext;
+      }
+      
+      const imgData = canvas.toDataURL("image/png");
+      
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgHeight = (canvas.height * pdfWidth) / canvas.width;
+      
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = position - pageHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+      
+      pdf.save("flashcards.pdf");
+      
+      toast.success("PDF Downloaded!", { id: "pdfLoading" });
+    } catch (error) {
+      toast.error("Failed to generate PDF", { id: "pdfLoading" });
+      console.error(error);
+    }
+  };
+
   const handleDeleteFlashcardSet = async () => {
     setDeleting(true);
     try {
@@ -133,7 +239,11 @@ const FlashcardPage = () => {
     return (
       <div className="flex flex-col items-center space-y-6">
         <div className="w-full max-w-md">
-          <Flashcard flashcard={currentCard} onToggleStar={handleToggleStar} />
+          <Flashcard 
+            flashcard={currentCard} 
+            onToggleStar={handleToggleStar} 
+            onToggleLearned={handleToggleLearned}
+          />
         </div>
         <div className="flex items-center gap-4">
           <Button
@@ -172,12 +282,34 @@ const FlashcardPage = () => {
       <PageHeader title="Flashcards">
         <div className="flex gap-2">
           {!loading && flashcards.length > 0 ? (
-            <Button
-              onClick={() => setIsDeleteModalOpen(true)}
-              disabled={deleting}
-            >
-              <Trash2 size={16} /> Delete Set
-            </Button>
+            <>
+              <Button
+                onClick={handleShuffle}
+                variant="secondary"
+                disabled={flashcards.length <= 1}
+              >
+                <Shuffle size={16} /> Shuffle
+              </Button>
+              <Button
+                onClick={triggerPrint}
+                variant="secondary"
+                className="hidden md:flex"
+              >
+                <Printer size={16} /> Print
+              </Button>
+              <Button
+                onClick={handleDownloadPDF}
+                variant="secondary"
+              >
+                <Download size={16} /> PDF
+              </Button>
+              <Button
+                onClick={() => setIsDeleteModalOpen(true)}
+                disabled={deleting}
+              >
+                <Trash2 size={16} /> Delete Set
+              </Button>
+            </>
           ) : (
             <Button
               onClick={handleGenerateFlashcards}
@@ -196,6 +328,22 @@ const FlashcardPage = () => {
       </PageHeader>
 
       {renderFlashcardContent()}
+
+      {/* Hidden Print Container */}
+      <div style={{ position: "absolute", left: "-9999px", top: "-9999px" }}>
+        <div ref={printRef} className="print-content" style={{ padding: "40px", backgroundColor: "white", width: "800px", color: "black", margin: "0 auto" }}>
+          <h1 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "20px", textAlign: "center" }}>Flashcards Study Set</h1>
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            {flashcards.map((card, index) => (
+              <div key={index} style={{ border: "1px solid #e2e8f0", padding: "20px", borderRadius: "8px", pageBreakInside: "avoid" }}>
+                <p style={{ fontWeight: "600", fontSize: "16px", marginBottom: "8px", color: "#0f172a" }}>Q{index + 1}: {card.question}</p>
+                <hr style={{ margin: "10px 0", borderColor: "#e2e8f0" }} />
+                <p style={{ fontSize: "16px", color: "#334155" }}><strong>A:</strong> {card.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <Modal
         isOpen={isDeleteModalOpen}

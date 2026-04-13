@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle2, Timer } from 'lucide-react';
 import quizService from '../../services/quizService';
 import PageHeader from '../../components/common/PageHeader';
 import Spinner from '../../components/common/Spinner';
@@ -16,6 +16,25 @@ const QuizTakePage = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+
+  useEffect(() => {
+    let intervalId;
+    if (quiz && !loading && !submitting) {
+      intervalId = setInterval(() => {
+        setElapsedTime((prev) => prev + 1);
+      }, 1000);
+    }
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [quiz, loading, submitting]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
 
   useEffect(() => {
     const fetchQuiz = async () => {
@@ -108,7 +127,13 @@ const QuizTakePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <PageHeader title={quiz.title || 'Take Quiz'} />
+      <div className="flex justify-between items-center mb-6">
+        <PageHeader title={quiz.title || 'Take Quiz'} />
+        <div className="flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-xl font-mono text-slate-700 font-semibold border border-slate-200">
+          <Timer className="w-5 h-5 text-emerald-500" />
+          {formatTime(elapsedTime)}
+        </div>
+      </div>
 
       {/* Progress Bar */}
       <div className="mb-6">

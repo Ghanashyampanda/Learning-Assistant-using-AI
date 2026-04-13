@@ -39,7 +39,7 @@ const Sidebar = ({isSidebarOpen, toggleSidebar}) => {
       ></div>
     
       <aside 
-          className={`fixed top-0 left-0 h-full w-64 bg-white/90 backdrop-blur-lg border-r border-slate-200/60 z-50 md:relative md:w-64 md:shrink-0 md:flex md:flex-col md:translate-x-0 transition-transform duration-300 ease-in-out ${
+          className={`fixed top-0 left-0 h-full w-64 bg-white/90 dark:bg-slate-900/95 backdrop-blur-lg border-r border-slate-200/60 dark:border-slate-700/60 z-50 md:relative md:w-64 md:shrink-0 md:flex md:flex-col md:translate-x-0 transition-transform duration-300 ease-in-out ${
             isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
           >
@@ -68,7 +68,7 @@ const Sidebar = ({isSidebarOpen, toggleSidebar}) => {
                     `group flex items-center gap-3 px-4 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
                       isActive
                       ? 'bg-linear-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25'
-                      : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                     }`
                   }
                   >
@@ -89,15 +89,15 @@ const Sidebar = ({isSidebarOpen, toggleSidebar}) => {
             </nav>
 
             {/* logout section */}
-            <div className="px-3 py-4 border-t border-slate-200/60">
+            <div className="px-3 py-4 border-t border-slate-200/60 dark:border-slate-700/60">
               <button
                 onClick={handleLogout}
-                className="group flex items-center gap-3 w-full px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-200"
+                className="group flex items-center gap-3 w-full px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-all duration-200"
               >
                 <LogOut
                 size={18}
                 strokeWidth={2.5}
-                className="transition-transform duration-200 group-hover:scale-110"
+                className="transition-transform duration-200 group-hover:scale-110 text-slate-400 dark:text-slate-500 group-hover:text-red-500 dark:group-hover:text-red-400"
                 />
               Logout
               </button>

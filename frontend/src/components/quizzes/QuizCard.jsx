@@ -6,7 +6,7 @@ import moment from 'moment'
 
 const QuizCard = ({ quiz, onDelete }) => {
   return (
-    <div className="group relative bg-white/80 backdrop-blur-xl border-2 border-2 border-slate-200 hover:border-emerald-300 rounded-2xl p-4 transition-all duration-200 hover: shadow-lg hover:shadow-emerald-500/10 flex flex-col justify-between">
+    <div className="group relative bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border-2 border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-400 rounded-2xl p-4 transition-all duration-200 hover: shadow-lg hover:shadow-emerald-500/10 flex flex-col justify-between">
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -20,15 +20,15 @@ const QuizCard = ({ quiz, onDelete }) => {
       <div className="space-y-4">
         {/* Status Badge */}
         <div className="inline-flex items-center gap-1.5 py-1 rounded-lg text-xs font-semibold">
-          <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-1">
-            <Award className="w-3.5 h-3.5 text-emerald-600" strokeWidth={2.5} />
-            <span className="text-emerald-700">Score: {quiz?.score}</span>
+          <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 rounded-lg px-3 py-1">
+            <Award className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
+            <span className="text-emerald-700 dark:text-emerald-400">Score: {quiz?.score}</span>
           </div>
         </div>
         {/* Title */}
         <div>
           <h3
-            className="text-base font-semibold text-slate-900 mb-1 line-clamp-2"
+            className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1 line-clamp-2"
             title={quiz.title}
           >
             {quiz.title || 
@@ -40,9 +40,9 @@ const QuizCard = ({ quiz, onDelete }) => {
         </div>
 
         {/* Quiz Info */}
-        <div className="flex items-center gap-3 pt-2 border-t border-slate-100">
-          <div className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg">
-            <span className="text-sm font-semibold text-slate-700">
+        <div className="flex items-center gap-3 pt-2 border-t border-slate-100 dark:border-slate-700/50">
+          <div className="px-3 py-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
               {quiz.questions.length}{" "}
               {quiz.questions.length === 1 ? "Question" : "Questions"}
             </span>
@@ -51,10 +51,10 @@ const QuizCard = ({ quiz, onDelete }) => {
       </div>
 
         {/* Action Button */}
-        <div className="mt-2 pt-4 border-t border-slate-100">
+        <div className="mt-2 pt-4 border-t border-slate-100 dark:border-slate-700/50">
           {quiz?.userAnswers?.length > 0 ? (
             <Link to={`/quizzes/${quiz._id}/results`}>
-              <button className="group/btn w-full inline-flex items-center justify-center gap-2 h-11 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl transition-all duration-200 active:scale-95 cursor-pointer">
+              <button className="group/btn w-full inline-flex items-center justify-center gap-2 h-11 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold text-sm rounded-xl transition-all duration-200 active:scale-95 cursor-pointer">
                 <BarChart2 className="w-4 h-4" strokeWidth={2.5} />
                 View Results
               </button>

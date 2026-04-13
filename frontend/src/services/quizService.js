@@ -33,6 +33,15 @@ const submitQuiz = async (quizId, answers) => {
     }
 };
 
+const resetQuiz = async (quizId) => {
+    try {
+        const response = await axioInstance.post(API_PATHS.QUIZZES.RESET_QUIZ(quizId));
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: "Failed to reset quiz" };
+    }
+};
+
 const getQuizResults = async (quizId) => {
     try {
         const response = await axioInstance.get(API_PATHS.QUIZZES.GET_QUIZ_RESULTS(quizId));
@@ -55,6 +64,7 @@ const quizService = {
     getQuizzesForDocument,
     getQuizById,
     submitQuiz,
+    resetQuiz,
     getQuizResults,
     deleteQuiz,
 };

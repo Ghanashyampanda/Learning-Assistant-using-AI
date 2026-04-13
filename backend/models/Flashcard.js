@@ -37,6 +37,10 @@ const flashcardSchema = new mongoose.Schema({
             type: Boolean,
             default: false,
         },
+        isLearned: {
+            type: Boolean,
+            default: false,
+        },
     }],
 }, {
     timestamps: true,

@@ -28,6 +28,7 @@ export const API_PATHS = {
         GET_FLASHCARD_FOR_DOC: (documentId) => `/api/flashcards/${documentId}`,
         REVIEW_FLASHCARD: (cardId) => `/api/flashcards/${cardId}/review`,
         TOGGLE_STAR: (cardId) => `/api/flashcards/${cardId}/star`,
+        TOGGLE_LEARNED: (cardId) => `/api/flashcards/${cardId}/learned`,
         DELETE_FLASHCARD_SET: (id) => `/api/flashcards/${id}`,
     },
 
@@ -35,6 +36,7 @@ export const API_PATHS = {
         GET_QUIZZES_FOR_DOC: (documentId) => `/api/quizzes/${documentId}`,
         GET_QUIZ_BY_ID: (id) => `/api/quizzes/quiz/${id}`,
         SUBMIT_QUIZ: (id) => `/api/quizzes/${id}/submit`,
+        RESET_QUIZ: (id) => `/api/quizzes/${id}/reset`,
         GET_QUIZ_RESULTS: (id) => `/api/quizzes/${id}/results`,
         DELETE_QUIZ: (id) => `/api/quizzes/${id}`,
     },

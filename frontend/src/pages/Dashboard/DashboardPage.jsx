@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Spinner from '../../components/common/Spinner';
 import progressService from '../../services/progressService';
 import toast from 'react-hot-toast';
-import { FileText, BookOpen, BrainCircuit, TrendingUp, Clock,CloudSnow } from 'lucide-react';
+import { FileText, BookOpen, BrainCircuit, TrendingUp, Clock, CloudSnow, Trophy } from 'lucide-react';
 
 const DashboardPage = () => {
 
@@ -64,6 +64,15 @@ const DashboardPage = () => {
       icon: BrainCircuit,
       gradient: "from-emerald-400 to-teal-400",
       shadowColor: "shadow-emerald-500/25",
+    },
+    {
+      label: "Average Score",
+      value: `${dashboardData.overview.averageScore || 0}%`,
+      icon: Trophy,
+      gradient: "from-amber-400 to-orange-400",
+      shadowColor: "shadow-amber-500/25",
+      isScore: true,
+      rawScore: dashboardData.overview.averageScore || 0,
     }
   ];
 
@@ -83,7 +92,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => (
             <div
               key={index}
@@ -97,9 +106,18 @@ const DashboardPage = () => {
                   <stat.icon className="w-5 h-5 text-white" strokeWidth={2} />
                 </div>
               </div>
-              <div className="text-3xl font-semibold text-slate-900 tracking-tight">
+              <div className="text-3xl font-semibold text-slate-900 tracking-tight mt-2">
                 {stat.value}
               </div>
+              
+              {stat.isScore && (
+                <div className="mt-4 relative h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className={`absolute inset-y-0 left-0 bg-linear-to-r ${stat.gradient} rounded-full transition-all duration-700 ease-out`}
+                    style={{ width: `${stat.rawScore}%` }}
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>

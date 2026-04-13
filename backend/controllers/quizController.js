@@ -218,3 +218,38 @@ export const deleteQuiz = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Reset a completed quiz for taking again
+// @route   POST /api/quizzes/:id/reset
+// @access  Private
+export const resetQuiz = async (req, res, next) => {
+    try {
+        const quiz = await Quiz.findOne({
+            _id: req.params.id,
+            userId: req.user._id
+        });
+
+        if(!quiz) {
+            return res.status(404).json({
+                success: false,
+                error: "Quiz not found",
+                statusCode: 404
+            });
+        }
+
+        // Reset the quiz state
+        quiz.completedAt = undefined;
+        quiz.score = undefined;
+        quiz.userAnswers = [];
+
+        await quiz.save();
+
+        res.status(200).json({
+            success: true,
+            data: quiz,
+            message: 'Quiz reset successfully'
+        });
+    } catch(error) {
+        next(error);
+    }
+};
