@@ -271,7 +271,7 @@ const QuizResultPage = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={triggerPrint}
-            className="inline-flex items-center gap-2 px-5 h-11 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl transition-all duration-200 active:scale-95 hidden md:flex"
+            className="hidden md:inline-flex items-center gap-2 px-5 h-11 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm rounded-xl transition-all duration-200 active:scale-95"
           >
             <Printer className="w-4 h-4" strokeWidth={2.5} />
             Print

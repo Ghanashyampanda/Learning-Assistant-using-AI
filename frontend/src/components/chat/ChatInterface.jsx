@@ -81,7 +81,7 @@ const ChatInterface = () => {
         )}
         <div className={`max-w-lg p-4 rounded-2xl shadow-sm ${
           isUser
-          ? 'bg-linear-to-br from-emerald-500 to-teal-500 to-teal-500 text-white rounded-br-md'
+          ? 'bg-linear-to-br from-emerald-500 to-teal-500 text-white rounded-br-md'
           : 'bg-white border border-slate-200/60 text-slate-800 rounded-bl-md'
         }`}>
           {isUser ? (
